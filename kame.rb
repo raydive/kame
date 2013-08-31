@@ -1,4 +1,6 @@
-
+#!/usr/bin/env ruby
+# encoding: utf-8
+require 'pry'
 
 $map = [%w(A B C D E F G H I J K),
        %w(L M N O P Q R S T U V),
@@ -18,9 +20,19 @@ $map = [%w(A B C D E F G H I J K),
 
 class Kame
 
-  def exec(command)
+  def initialize
+    @x = 0
+    @y = 0
+    @rad = 0.0
+  end 
+
+  def execute(command)
+    if out_of_buond?
+      return ''
+    end
+
     case command
-    when /1-9a-f/
+    when /[1-9a-f]/
       i = command.to_i(16)
       forward(i)
     when 'R'
@@ -33,26 +45,44 @@ class Kame
   end
 
   def forward(i)
+    result = @x == 0 && @y == 0 ? [$map[@y][@x]] : []
 
+    i.times do |index|
+      @x += Math.cos(@rad).round
+      @y += Math.sin(@rad).round
+      if out_of_buond?
+        result.push '?'
+        return result.join('')
+      end
+      result.push $map[@y][@x] 
+    end
+    
+    result.join('')
   end
 
   def L
-
+    @rad -= Math::PI/2    
+    return ''
   end
 
   def R
+    @rad += Math::PI/2    
+    return ''
+  end
 
+  private
+  def out_of_buond?
+    $map[@y].nil? || $map[@y][@x].nil? || @x < 0 || @y < 0 
   end
 end
 
 def main
   kame = Kame.new
 
-  command = ''
-  result = ''
-  command.split(//).each {|command|
-    result += kame.exec(command)
+  commands = '2RcL3LL22'
+  result = kame.now_place
+  commands.split(//).each {|command|
+    result += kame.execute(command)
   }
   puts result
-
 end
