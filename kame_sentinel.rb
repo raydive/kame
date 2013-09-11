@@ -31,6 +31,7 @@ class Kame
     @x = 1
     @y = 1
     @rad = 0.0
+    @once = true
   end 
 
   def execute(command)
@@ -50,7 +51,8 @@ class Kame
   end
 
   def forward(i)
-    result = @x == 1 && @y == 1 ? [$map[@y][@x]] : []
+    result = @once ? [$map[@y][@x]] : []
+    @once = false
 
     i.times do |index|
       @x += Math.cos(@rad).round
